@@ -72,7 +72,6 @@ fun IMCScreen() {
             color = Color.Gray
         )
 
-        // Card entrada
         Card(
             shape = RoundedCornerShape(16.dp),
             elevation = CardDefaults.cardElevation(0.dp),
@@ -105,7 +104,6 @@ fun IMCScreen() {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Botão
         Button(
             onClick = { calcularIMC() },
             modifier = Modifier

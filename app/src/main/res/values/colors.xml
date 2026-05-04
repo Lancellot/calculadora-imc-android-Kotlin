@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="roxo_principal">#534AB7</color>
+    <color name="roxo_claro">#EEEDFE</color>
+    <color name="roxo_escuro">#3C3489</color>
+
+    <color name="verde_resultado">#0F6E56</color>
+    <color name="verde_claro">#E1F5EE</color>
+
+    <color name="fundo_app">#F5F4FE</color>
+    <color name="texto_primario">#26215C</color>
+    <color name="texto_secundario">#7F77DD</color>
+
+    <color name="cor_abaixo">#185FA5</color>
+    <color name="cor_normal">#3B6D11</color>
+    <color name="cor_sobrepeso">#BA7517</color>
+    <color name="cor_obesidade">#A32D2D</color>
 </resources>

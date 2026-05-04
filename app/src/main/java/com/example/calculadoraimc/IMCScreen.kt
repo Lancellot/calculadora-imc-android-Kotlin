@@ -4,62 +4,75 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.util.Locale
 
+// --------------------
+// MODEL
+// --------------------
+data class ResultadoIMC(
+    val valor: Double,
+    val categoria: String,
+    val cor: Int
+)
+
+// --------------------
+// LÓGICA
+// --------------------
+fun calcularIMC(peso: String, altura: String): ResultadoIMC? {
+    val p = peso.replace(",", ".").toDoubleOrNull()
+    val a = altura.replace(",", ".").toDoubleOrNull()
+
+    if (p == null || a == null || a <= 0) return null
+
+    val imc = p / (a * a)
+
+    return when {
+        imc < 18.5 -> ResultadoIMC(imc, "Abaixo do peso", R.color.cor_abaixo)
+        imc < 24.9 -> ResultadoIMC(imc, "Peso normal", R.color.cor_normal)
+        imc < 29.9 -> ResultadoIMC(imc, "Sobrepeso", R.color.cor_sobrepeso)
+        else -> ResultadoIMC(imc, "Obesidade", R.color.cor_obesidade)
+    }
+}
+
+// --------------------
+// UI
+// --------------------
 @Composable
 fun IMCScreen() {
 
     var peso by remember { mutableStateOf("") }
     var altura by remember { mutableStateOf("") }
-
-    var imc by remember { mutableStateOf("") }
-    var categoria by remember { mutableStateOf("") }
-    var mostrarResultado by remember { mutableStateOf(false) }
-
-    fun calcularIMC() {
-        val p = peso.toDoubleOrNull()
-        val a = altura.toDoubleOrNull()
-
-        if (p != null && a != null && a > 0) {
-            val resultado = p / (a * a)
-            imc = String.format("%.2f", resultado)
-
-            categoria = when {
-                resultado < 18.5 -> "Abaixo do peso"
-                resultado < 24.9 -> "Peso normal"
-                resultado < 29.9 -> "Sobrepeso"
-                else -> "Obesidade"
-            }
-
-            mostrarResultado = true
-        }
-    }
+    var resultado by remember { mutableStateOf<ResultadoIMC?>(null) }
+    var erro by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
+            .background(colorResource(R.color.fundo_app))
             .verticalScroll(rememberScrollState())
             .padding(24.dp)
     ) {
 
-        // Título
+        // TÍTULO
         Text(
             text = "Calculadora de IMC",
             fontSize = 26.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
-            color = Color(0xFF4A148C)
+            color = colorResource(R.color.texto_primario)
         )
 
         Text(
@@ -69,23 +82,29 @@ fun IMCScreen() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 32.dp),
-            color = Color.Gray
+            color = colorResource(R.color.texto_secundario)
         )
 
+        // CARD INPUT
         Card(
             shape = RoundedCornerShape(16.dp),
-            elevation = CardDefaults.cardElevation(0.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
+            colors = CardDefaults.cardColors(containerColor = colorResource(R.color.roxo_claro)),
             modifier = Modifier.fillMaxWidth()
         ) {
+
             Column(modifier = Modifier.padding(20.dp)) {
 
                 Text("Peso (kg)", fontWeight = FontWeight.Bold)
 
                 OutlinedTextField(
                     value = peso,
-                    onValueChange = { peso = it },
+                    onValueChange = {
+                        peso = it.replace(",", ".")
+                        resultado = null
+                        erro = ""
+                    },
                     placeholder = { Text("Ex: 70.5") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 20.dp)
@@ -95,8 +114,13 @@ fun IMCScreen() {
 
                 OutlinedTextField(
                     value = altura,
-                    onValueChange = { altura = it },
+                    onValueChange = {
+                        altura = it.replace(",", ".")
+                        resultado = null
+                        erro = ""
+                    },
                     placeholder = { Text("Ex: 1.75") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     modifier = Modifier.fillMaxWidth()
                 )
             }
@@ -104,23 +128,49 @@ fun IMCScreen() {
 
         Spacer(modifier = Modifier.height(20.dp))
 
+        // BOTÃO
         Button(
-            onClick = { calcularIMC() },
+            onClick = {
+                val res = calcularIMC(peso, altura)
+                if (res == null) {
+                    erro = "Preencha valores válidos"
+                    resultado = null
+                } else {
+                    resultado = res
+                    erro = ""
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7B1FA2))
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(R.color.roxo_principal)
+            )
         ) {
-            Text("Calcular IMC", color = Color.White)
+            Text("Calcular IMC", color = colorResource(android.R.color.white))
+        }
+
+        // ERRO
+        if (erro.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = erro,
+                color = MaterialTheme.colorScheme.error
+            )
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        if (mostrarResultado) {
+        // RESULTADO
+        resultado?.let {
+
             Card(
                 shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFC8E6C9))
+                colors = CardDefaults.cardColors(
+                    containerColor = colorResource(R.color.verde_claro)
+                )
             ) {
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -128,41 +178,26 @@ fun IMCScreen() {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
-                    Text("Seus dados", color = Color(0xFF2E7D32))
+                    Text(
+                        text = "Seu IMC",
+                        color = colorResource(R.color.verde_resultado)
+                    )
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Text("Peso:", modifier = Modifier.weight(1f))
-                        Text(peso, fontWeight = FontWeight.Bold)
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp)
-                    ) {
-                        Text("Altura:", modifier = Modifier.weight(1f))
-                        Text(altura, fontWeight = FontWeight.Bold)
-                    }
-
-                    Divider()
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Text("Seu IMC", color = Color(0xFF2E7D32))
-
                     Text(
-                        text = imc,
+                        text = String.format(Locale.getDefault(), "%.2f", it.valor),
                         fontSize = 52.sp,
                         fontWeight = FontWeight.Bold
                     )
 
+                    Spacer(modifier = Modifier.height(8.dp))
+
                     Text(
-                        text = categoria,
+                        text = it.categoria,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF2E7D32)
+                        color = colorResource(it.cor)
                     )
                 }
             }

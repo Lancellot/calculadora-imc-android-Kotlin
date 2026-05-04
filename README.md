@@ -21,7 +21,8 @@ Abaixo, você pode ver a interface do aplicativo:
 
 <!-- Espaço reservado para Screenshot -->
 <p align="center">
-  <img src="screenshot.png" alt="Screenshot da Calculadora de IMC" width="300">
+  <img width="256" height="455" alt="WhatsApp Image 2026-05-04 at 15 13 31" src="https://github.com/user-attachments/assets/0c2fc1f4-ee2d-494c-9c93-b4675f5796dd" />
+
 </p>
 
 *Caso a imagem acima não apareça, certifique-se de adicionar um arquivo chamado `screenshot.png` na raiz do projeto ou atualizar o link.*

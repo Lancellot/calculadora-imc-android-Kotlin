@@ -18,18 +18,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.util.Locale
 
-// --------------------
-// MODEL
-// --------------------
 data class ResultadoIMC(
     val valor: Double,
     val categoria: String,
     val cor: Int
 )
 
-// --------------------
-// LÓGICA
-// --------------------
 fun calcularIMC(peso: String, altura: String): ResultadoIMC? {
     val p = peso.replace(",", ".").toDoubleOrNull()
     val a = altura.replace(",", ".").toDoubleOrNull()
@@ -46,9 +40,6 @@ fun calcularIMC(peso: String, altura: String): ResultadoIMC? {
     }
 }
 
-// --------------------
-// UI
-// --------------------
 @Composable
 fun IMCScreen() {
 
@@ -65,7 +56,6 @@ fun IMCScreen() {
             .padding(24.dp)
     ) {
 
-        // TÍTULO
         Text(
             text = "Calculadora de IMC",
             fontSize = 26.sp,
@@ -85,7 +75,6 @@ fun IMCScreen() {
             color = colorResource(R.color.texto_secundario)
         )
 
-        // CARD INPUT
         Card(
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(containerColor = colorResource(R.color.roxo_claro)),
@@ -128,7 +117,6 @@ fun IMCScreen() {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // BOTÃO
         Button(
             onClick = {
                 val res = calcularIMC(peso, altura)
@@ -150,7 +138,6 @@ fun IMCScreen() {
             Text("Calcular IMC", color = colorResource(android.R.color.white))
         }
 
-        // ERRO
         if (erro.isNotEmpty()) {
             Spacer(modifier = Modifier.height(12.dp))
             Text(
@@ -161,7 +148,6 @@ fun IMCScreen() {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // RESULTADO
         resultado?.let {
 
             Card(
